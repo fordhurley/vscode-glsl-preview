@@ -16,7 +16,8 @@
 	"contributes": {
 		"commands": [{
 			"command": "glslPreview.show",
-			"title": "Show GLSL Preview"
+			"title": "Show GLSL Preview",
+			"when": "editorLangId == glsl"
 		}]
 	},
 	"scripts": {
