@@ -10,13 +10,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:glslPreview.show"
 	],
-	"main": "./out/extension.js",
+	"main": "./out/main.js",
 	"contributes": {
 		"commands": [{
-			"command": "extension.helloWorld",
-			"title": "Hello World"
+			"command": "glslPreview.show",
+			"title": "Show GLSL Preview"
 		}]
 	},
 	"scripts": {
