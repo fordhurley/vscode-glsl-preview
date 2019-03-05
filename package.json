@@ -25,13 +25,14 @@
     "scripts": {
         "vscode:prepublish": "yarn run compile && yarn run bundle",
         "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "watch": "concurrently 'tsc -watch -p ./' 'rollup --watch -c rollup.config.js'",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "lint": "tslint -p ./",
         "bundle": "rollup -c rollup.config.js"
     },
     "devDependencies": {
         "@types/node": "^10.12.21",
+        "concurrently": "^4.1.0",
         "rollup": "^1.4.1",
         "rollup-plugin-commonjs": "^9.2.1",
         "tslint": "^5.12.1",
