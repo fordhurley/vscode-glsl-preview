@@ -36,17 +36,25 @@ class Shader {
     public resize() {
         const size = Math.min(window.innerWidth, window.innerHeight);
         this.shaderCanvas.setSize(size, size);
+        this.setResolutionUniform();
+    }
+
+    public animate(timestamp: number) {
+        window.requestAnimationFrame(this.animate);
+        this.setTimeUniform(timestamp / 1000);
+        this.shaderCanvas.render();
+    }
+
+    private setResolutionUniform() {
         if (testUniform("vec2", "u_resolution", this.source)) {
             this.shaderCanvas.setUniform("u_resolution", this.shaderCanvas.getResolution());
         }
     }
 
-    public animate(timestamp: number) {
-        window.requestAnimationFrame(this.animate);
+    private setTimeUniform(timeSeconds: number) {
         if (testUniform("float", "u_time", this.source)) {
-            this.shaderCanvas.setUniform("u_time", timestamp / 1000);
+            this.shaderCanvas.setUniform("u_time", timeSeconds);
         }
-        this.shaderCanvas.render();
     }
 }
 
