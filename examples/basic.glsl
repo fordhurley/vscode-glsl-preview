@@ -21,7 +21,7 @@ void main() {
 
   float radius = map(sin(u_time), -1.0, 1.0, 0.25, 0.3);
 
-  if (distance(uv, mouse) < radius){
+  if (distance(uv, mouse) < radius) {
     color.r = 1.0 - color.r;
     color.b = 1.0 - color.b;
   }

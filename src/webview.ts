@@ -12,15 +12,17 @@ export class Webview {
     private disposables: vscode.Disposable[] = [];
 
     public static createOrShow(extensionPath: string) {
-        const column = vscode.ViewColumn.Beside;
+        const viewColumn = vscode.ViewColumn.Beside;
 
         if (Webview.current) {
-            Webview.current.panel.reveal(column);
+            Webview.current.panel.reveal(viewColumn);
             return;
         }
 
-        console.log("creating webview");
-        const panel = vscode.window.createWebviewPanel(Webview.viewType, "GLSL Preview", column, {
+        const panel = vscode.window.createWebviewPanel(Webview.viewType, "GLSL Preview", {
+            viewColumn,
+            preserveFocus: true, // remain focused on the editor when opening this
+        }, {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.file(path.join(extensionPath, "out", "resources"))],
         });
@@ -41,11 +43,18 @@ export class Webview {
     public dispose() {
         Webview.current = undefined;
         vscode.Disposable.from(...this.disposables).dispose();
-}
+    }
 
     private renderHTML() {
         console.log("renderHTML", this.extensionPath);
         this.panel.webview.html = getHTML(this.extensionPath);
+    }
+
+    public updateShader(source: string) {
+        this.panel.webview.postMessage({
+            command: "updateShader",
+            source,
+        });
     }
 }
 
