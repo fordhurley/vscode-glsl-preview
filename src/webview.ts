@@ -54,6 +54,27 @@ export class Webview {
             command: "updateShader",
             source,
         });
+
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+        const textures = parseTextureDirectives(source).map(({name, filePath}) => {
+            const dirname = path.dirname(editor.document.uri.path);
+            const src = editor.document.uri.with({
+                path: path.resolve(dirname, filePath),
+                scheme: "vscode-resource",
+            }).toString();
+            console.log(src);
+            // FIXME: these files violate CORS, so try loading it here and base64 encoding?
+            return {name, src};
+        });
+        if (textures.length > 0) {
+            this.panel.webview.postMessage({
+                command: "setTextures",
+                textures,
+            });
+        }
     }
 }
 
@@ -101,3 +122,18 @@ function getNonce() {
     }
     return text;
 }
+
+function parseTextureDirectives(source: string) {
+    // Looking for lines of the form:
+    // uniform sampler2D foo; // ../textures/foo.png
+    const re = /^\s*uniform\s+sampler2D\s+(\S+)\s*;\s*\/\/\s*(\S+)\s*$/gm;
+    const out = [];
+    let match = re.exec(source);
+    while (match !== null) {
+      const name = match[1];
+      const filePath = match[2];
+      out.push({name, filePath});
+      match = re.exec(source);
+    }
+    return out;
+  }
