@@ -22,7 +22,7 @@ export class Webview {
         console.log("creating webview");
         const panel = vscode.window.createWebviewPanel(Webview.viewType, "GLSL Preview", column, {
             enableScripts: true,
-            localResourceRoots: [vscode.Uri.file(path.join(extensionPath, "resources"))],
+            localResourceRoots: [vscode.Uri.file(path.join(extensionPath, "out", "resources"))],
         });
 
         Webview.current = new Webview(panel, extensionPath);
@@ -51,7 +51,7 @@ export class Webview {
 
 function getHTML(extensionPath: string): string {
     const nonce = getNonce();
-    const scriptPath = path.join(extensionPath, "resources", "webview-main.js");
+    const scriptPath = path.join(extensionPath, "out", "resources", "webview-main.js");
     const scriptUri = vscode.Uri.file(scriptPath).with({scheme: "vscode-resource"});
     return `
         <!DOCTYPE html>
