@@ -30,6 +30,7 @@ class Shader {
     public setSource(source: string) {
         this.source = source;
         this.shaderCanvas.setShader(this.source);
+        this.resize();
     }
 
     public resize() {

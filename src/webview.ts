@@ -46,7 +46,6 @@ export class Webview {
     }
 
     private renderHTML() {
-        console.log("renderHTML", this.extensionPath);
         this.panel.webview.html = getHTML(this.extensionPath);
     }
 
