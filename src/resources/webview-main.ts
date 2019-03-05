@@ -25,6 +25,9 @@ class Shader {
 
         this.animate = this.animate.bind(this);
         window.requestAnimationFrame(this.animate);
+
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.shaderCanvas.domElement.addEventListener("mousemove", this.handleMouseMove);
     }
 
     public setSource(source: string) {
@@ -45,6 +48,13 @@ class Shader {
         this.shaderCanvas.render();
     }
 
+    public handleMouseMove(e: MouseEvent) {
+        this.setMouseUniform(
+            e.offsetX / this.shaderCanvas.width,
+            1 - (e.offsetY / this.shaderCanvas.height),
+        );
+    }
+
     private setResolutionUniform() {
         if (testUniform("vec2", "u_resolution", this.source)) {
             this.shaderCanvas.setUniform("u_resolution", this.shaderCanvas.getResolution());
@@ -54,6 +64,12 @@ class Shader {
     private setTimeUniform(timeSeconds: number) {
         if (testUniform("float", "u_time", this.source)) {
             this.shaderCanvas.setUniform("u_time", timeSeconds);
+        }
+    }
+
+    private setMouseUniform(x: number, y: number) {
+        if (testUniform("vec2", "u_mouse", this.source)) {
+            this.shaderCanvas.setUniform("u_mouse", [x, y]);
         }
     }
 }
