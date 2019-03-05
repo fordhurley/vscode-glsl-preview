@@ -51,7 +51,7 @@ export class Webview {
 
 function getHTML(extensionPath: string): string {
     const nonce = getNonce();
-    const scriptPath = path.join(extensionPath, "out", "resources", "webview-main.js");
+    const scriptPath = path.join(extensionPath, "out", "resources", "bundle.js");
     const scriptUri = vscode.Uri.file(scriptPath).with({scheme: "vscode-resource"});
     return `
         <!DOCTYPE html>
