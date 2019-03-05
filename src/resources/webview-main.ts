@@ -1,7 +1,5 @@
 import {ShaderCanvas} from "shader-canvas";
 
-const size = Math.min(window.innerWidth, window.innerHeight);
-
 const shader = new ShaderCanvas();
 shader.setShader(`
     precision mediump float;
@@ -12,8 +10,14 @@ shader.setShader(`
     }
 `);
 
-shader.setSize(size, size);
-shader.setUniform("u_resolution", shader.getResolution());
+function resize() {
+    const size = Math.min(window.innerWidth, window.innerHeight);
+    shader.setSize(size, size);
+    shader.setUniform("u_resolution", shader.getResolution());
+}
+resize();
+window.addEventListener("resize", resize);
+
 shader.render();
 
 document.body.appendChild(shader.domElement);
