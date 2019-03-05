@@ -1,6 +1,7 @@
 precision mediump float;
 
 uniform vec2 u_resolution;
+uniform float u_time;
 uniform sampler2D u_mainTex; // grace_hopper.jpg
 
 void main() {
@@ -15,6 +16,8 @@ void main() {
   uv = fract(uv);
 
   vec3 tex = texture2D(u_mainTex, uv).rgb;
+  tex.r *= abs(sin(u_time));
+  tex.g *= abs(cos(u_time));
 
   gl_FragColor = vec4(tex, 1.0);
 }

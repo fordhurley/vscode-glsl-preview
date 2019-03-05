@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -59,22 +60,21 @@ export class Webview {
         if (!editor) {
             return;
         }
-        const textures = parseTextureDirectives(source).map(({name, filePath}) => {
+        const promises = parseTextureDirectives(source).map(({name, filePath}) => {
             const dirname = path.dirname(editor.document.uri.path);
-            const src = editor.document.uri.with({
-                path: path.resolve(dirname, filePath),
-                scheme: "vscode-resource",
-            }).toString();
-            console.log(src);
-            // FIXME: these files violate CORS, so try loading it here and base64 encoding?
-            return {name, src};
-        });
-        if (textures.length > 0) {
-            this.panel.webview.postMessage({
-                command: "setTextures",
-                textures,
+            const absPath = path.resolve(dirname, filePath);
+            return loadImageAsBase64(absPath).then((src) => {
+                return {name, src};
             });
-        }
+        })
+        Promise.all(promises).then((textures) => {
+            if (textures.length > 0) {
+                this.panel.webview.postMessage({
+                    command: "setTextures",
+                    textures,
+                });
+            }
+        });
     }
 }
 
@@ -94,7 +94,7 @@ function getHTML(extensionPath: string): string {
                 http-equiv="Content-Security-Policy"
                 content="
                     default-src 'none';
-                    img-src vscode-resource: https:;
+                    img-src vscode-resource: https: data:;
                     script-src 'nonce-${scriptNonce}';
                     style-src 'nonce-${styleNonce}';
                 "
@@ -130,10 +130,24 @@ function parseTextureDirectives(source: string) {
     const out = [];
     let match = re.exec(source);
     while (match !== null) {
-      const name = match[1];
-      const filePath = match[2];
-      out.push({name, filePath});
-      match = re.exec(source);
+        const name = match[1];
+        const filePath = match[2];
+        out.push({name, filePath});
+        match = re.exec(source);
     }
     return out;
-  }
+}
+
+function loadImageAsBase64(absPath: string) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(absPath, (err, data) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            // FIXME: set mime-type
+            const src = "data:image/jpeg;base64," + data.toString("base64");
+            resolve(src);
+        });
+    });
+}

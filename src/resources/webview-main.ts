@@ -11,7 +11,6 @@ interface Texture {
 }
 
 function loadImage(src: string) {
-    console.log("loading image:", src);
     return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image();
         img.src = src;
