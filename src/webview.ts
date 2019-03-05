@@ -50,9 +50,12 @@ export class Webview {
 }
 
 function getHTML(extensionPath: string): string {
-    const nonce = getNonce();
+    const styleNonce = getNonce();
+
+    const scriptNonce = getNonce();
     const scriptPath = path.join(extensionPath, "out", "resources", "bundle.js");
     const scriptUri = vscode.Uri.file(scriptPath).with({scheme: "vscode-resource"});
+
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -60,12 +63,23 @@ function getHTML(extensionPath: string): string {
             <meta charset="UTF-8">
             <meta
                 http-equiv="Content-Security-Policy"
-                content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';"
+                content="
+                    default-src 'none';
+                    img-src vscode-resource: https:;
+                    script-src 'nonce-${scriptNonce}';
+                    style-src 'nonce-${styleNonce}';
+                "
             >
+            <style nonce="${styleNonce}">
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            </style>
             <title>GLSL Preview</title>
         </head>
         <body>
-            <script nonce="${nonce}" src="${scriptUri}"></script>
+            <script nonce="${scriptNonce}" src="${scriptUri}"></script>
         </body>
         </html>
     `;
